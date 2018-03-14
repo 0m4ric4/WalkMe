@@ -17,7 +17,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
-import android.support.annotation.DrawableRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -102,119 +101,6 @@ public class MainActivity extends FragmentActivity implements LocationListener,
         // device sensor manager
 
     private SensorManager mSensorManager;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
-        // prevent the screen going to sleep while app is on foreground
-        findViewById(android.R.id.content).setKeepScreenOn(true);
-
-        // instantiate IALocationManager and IAResourceManager
-        mIALocationManager = IALocationManager.create(this);
-        mResourceManager = IAResourceManager.create(this);
-
-        // Request GPS locations
-        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
-            return;
-        }
-
-        startListeningPlatformLocations();
-
-        String graphJSON = loadGraphJSON();
-        if (graphJSON == null) {
-            Toast.makeText(this, "Could not find wayfinding_graph.json from raw " +
-                    "resources folder. Cannot do wayfinding.", Toast.LENGTH_LONG).show();
-        } else {
-            mWayfinder = IAWayfinder.create(this, graphJSON);
-        }
-
-
-        // navigateTo(25.09210937,55.15636251);
-    }
-
-    private void navigateTo(double lat, double lng) {
-        mWayfinder.setLocation(currentLocation.latitude, currentLocation.longitude, 3);
-
-        mWayfinder.setDestination(lat, lng, 3);
-        mCurrentRoute = mWayfinder.getRoute();
-
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // remember to clean up after ourselves
-        mIALocationManager.destroy();
-        if (mWayfinder != null) {
-            mWayfinder.close();
-        }
-    }
-
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // for the system's orientation sensor registered listeners
-
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
-
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            mMap.setMyLocationEnabled(false);
-        }
-
-        // start receiving location updates & monitor region changes
-        mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
-        mIALocationManager.registerRegionListener(mRegionListener);
-
-        mMap.setOnMapClickListener(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // unregister location & region changes
-        mIALocationManager.removeLocationUpdates(mListener);
-        mIALocationManager.registerRegionListener(mRegionListener);
-    }
-
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
-        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
-
-    private void drawMarker(){
-
-        if (mMarker == null) {
-            if (mMap != null) {
-                mMarker = mMap.addMarker(new MarkerOptions().position(mLocation)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_blue_dot))
-                         .anchor(0.5f, 0.5f)
-                        .rotation(currentDegree)
-                        .flat(true));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 17.0f));
-            }
-        } else {
-            mMarker.setPosition(mLocation);
-            mMarker.setRotation(currentDegree);
-        }
-
-    }
     /**
      * Listener that handles location change events.
      */
@@ -236,7 +122,7 @@ public class MainActivity extends FragmentActivity implements LocationListener,
             drawMarker();
 
             if (mMap == null) {
-                // location received before map is initialized, ignoring update here
+                //location received before map is initialized, ignoring update here
                 return;
             }
 
@@ -302,6 +188,117 @@ public class MainActivity extends FragmentActivity implements LocationListener,
         }
 
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        // prevent the screen going to sleep while app is on foreground
+        findViewById(android.R.id.content).setKeepScreenOn(true);
+
+        // instantiate IALocationManager and IAResourceManager
+        mIALocationManager = IALocationManager.create(this);
+        mResourceManager = IAResourceManager.create(this);
+
+        // Request GPS locations
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
+            return;
+        }
+
+        startListeningPlatformLocations();
+
+        String graphJSON = loadGraphJSON();
+        if (graphJSON == null) {
+            Toast.makeText(this, "Could not find wayfinding_graph.json from raw " +
+                    "resources folder. Cannot do wayfinding.", Toast.LENGTH_LONG).show();
+        } else {
+            mWayfinder = IAWayfinder.create(this, graphJSON);
+        }
+
+
+        // navigateTo(25.09210937,55.15636251);
+    }
+
+    private void navigateTo(double lat, double lng) {
+        mWayfinder.setLocation(currentLocation.latitude, currentLocation.longitude, 3);
+
+        mWayfinder.setDestination(lat, lng, 3);
+        mCurrentRoute = mWayfinder.getRoute();
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // remember to clean up after ourselves
+        mIALocationManager.destroy();
+        if (mWayfinder != null) {
+            mWayfinder.close();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // for the system's orientation sensor registered listeners
+
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
+
+        if (mMap == null) {
+            // Try to obtain the map from the SupportMapFragment.
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                    .getMap();
+            mMap.setMyLocationEnabled(false);
+        }
+
+        // start receiving location updates & monitor region changes
+        mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
+        mIALocationManager.registerRegionListener(mRegionListener);
+
+        mMap.setOnMapClickListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // unregister location & region changes
+        mIALocationManager.removeLocationUpdates(mListener);
+        mIALocationManager.registerRegionListener(mRegionListener);
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    private void drawMarker(){
+
+        if (mMarker == null) {
+            if (mMap != null) {
+                mMarker = mMap.addMarker(new MarkerOptions().position(mLocation)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_blue_dot))
+                         .anchor(0.5f, 0.5f)
+                        .rotation(currentDegree)
+                        .flat(true));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 17.0f));
+            }
+        } else {
+            mMarker.setPosition(mLocation);
+            mMarker.setRotation(currentDegree);
+        }
+
+    }
 
     private void showLocationCircle(LatLng center, double accuracyRadius) {
         if (mCircle == null) {

@@ -5,16 +5,23 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.annotation.DrawableRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -56,7 +63,7 @@ import java.io.InputStream;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends FragmentActivity implements LocationListener,
-        GoogleMap.OnMapClickListener {
+        GoogleMap.OnMapClickListener,SensorEventListener {
     private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 42;
 
     private static final String TAG = "WalkMe";
@@ -90,10 +97,19 @@ public class MainActivity extends FragmentActivity implements LocationListener,
     private LatLng currentLocation;
     private Marker mMarker;
 
+    private float currentDegree = 0f;
+
+        // device sensor manager
+
+    private SensorManager mSensorManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         // prevent the screen going to sleep while app is on foreground
         findViewById(android.R.id.content).setKeepScreenOn(true);
@@ -141,9 +157,16 @@ public class MainActivity extends FragmentActivity implements LocationListener,
         }
     }
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
+
+        // for the system's orientation sensor registered listeners
+
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
+
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
@@ -166,6 +189,32 @@ public class MainActivity extends FragmentActivity implements LocationListener,
         mIALocationManager.registerRegionListener(mRegionListener);
     }
 
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    private void drawMarker(){
+
+        if (mMarker == null) {
+            if (mMap != null) {
+                mMarker = mMap.addMarker(new MarkerOptions().position(mLocation)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_blue_dot))
+                         .anchor(0.5f, 0.5f)
+                        .rotation(currentDegree)
+                        .flat(true));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 17.0f));
+            }
+        } else {
+            mMarker.setPosition(mLocation);
+            mMarker.setRotation(currentDegree);
+        }
+
+    }
     /**
      * Listener that handles location change events.
      */
@@ -177,18 +226,15 @@ public class MainActivity extends FragmentActivity implements LocationListener,
         @Override
         public void onLocationChanged(IALocation location) {
 
+
+            mLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
             Log.d(TAG, "new location received with coordinates: " + location.getLatitude()
                     + "," + location.getLongitude());
-            final LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
-            if (mMarker == null) {
-                if (mMap != null) {
-                    mMarker = mMap.addMarker(new MarkerOptions().position(center)
-                            .icon(BitmapDescriptorFactory.defaultMarker(HUE_IABLUE)));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 17.0f));
-                }
-            } else {
-                mMarker.setPosition(center);
-            }
+
+
+            drawMarker();
+
             if (mMap == null) {
                 // location received before map is initialized, ignoring update here
                 return;
@@ -196,19 +242,18 @@ public class MainActivity extends FragmentActivity implements LocationListener,
 
 
             mFloor = location.getFloorLevel();
-            mLocation = new LatLng(location.getLatitude(), location.getLongitude());
             if (mWayfinder != null) {
                 mWayfinder.setLocation(mLocation.latitude, mLocation.longitude, mFloor);
             }
             updateRoute();
 
             if (mShowIndoorLocation) {
-                showLocationCircle(center, location.getAccuracy());
+                showLocationCircle(mLocation, location.getAccuracy());
             }
 
             // our camera position needs updating if location has significantly changed
             if (mCameraPositionNeedsUpdating) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 17.5f));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 17.5f));
                 mCameraPositionNeedsUpdating = false;
             }
         }
@@ -488,10 +533,12 @@ public class MainActivity extends FragmentActivity implements LocationListener,
         }
     }
 
+
     private void updateRoute() {
         if (mLocation == null || mDestination == null || mWayfinder == null) {
             return;
         }
+
         Log.d(TAG, "Updating the wayfinding route");
 
         mCurrentRoute = mWayfinder.getRoute();
@@ -503,6 +550,8 @@ public class MainActivity extends FragmentActivity implements LocationListener,
             // Remove old path if any
             clearOldPath();
         }
+
+
         visualizeRoute(mCurrentRoute);
     }
 
@@ -524,6 +573,7 @@ public class MainActivity extends FragmentActivity implements LocationListener,
         // whole path, including parts in other floors.
         PolylineOptions opt = new PolylineOptions();
         PolylineOptions optCurrent = new PolylineOptions();
+        Log.d("TAG",legs.length+"");
 
         for (IARoutingLeg leg : legs) {
             opt.add(new LatLng(leg.getBegin().getLatitude(), leg.getBegin().getLongitude()));
@@ -539,9 +589,28 @@ public class MainActivity extends FragmentActivity implements LocationListener,
             IARoutingLeg leg = legs[legs.length - 1];
             opt.add(new LatLng(leg.getEnd().getLatitude(), leg.getEnd().getLongitude()));
         }
+
         // Here wayfinding path in different floor than current location is visualized in blue and
         // path in current floor is visualized in red
+        Log.d("TAG",opt.getPoints().get(0).toString()+"");
+
+       // mMap.addPolyline(new PolylineOptions().add(new LatLng(mLocation.latitude,mLocation.longitude)).add(new LatLng(mDestination.latitude,mDestination.longitude)));
         mPath = mMap.addPolyline(opt);
         mPathCurrent = mMap.addPolyline(optCurrent);
+    }
+
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+
+        currentDegree = sensorEvent.values[0];
+
+       /* if(mLocation!=null)
+        drawMarker(); */
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 }

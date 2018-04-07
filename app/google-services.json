@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "368752124022",
+    "firebase_url": "https://walkme-38a8a.firebaseio.com",
+    "project_id": "walkme-38a8a",
+    "storage_bucket": "walkme-38a8a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368752124022:android:5e414cdf5efff47c",
+        "android_client_info": {
+          "package_name": "com.omarica.walkme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "368752124022-1svrus7f1vjnsoia1ug793t5gn3qhvck.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.omarica.walkme",
+            "certificate_hash": "025f30b7cea0ebe2e6b45f3e8660fea6edbb8764"
+          }
+        },
+        {
+          "client_id": "368752124022-9l6dilm5u7ssifmf2fm1mige7a36h48t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtpOZTI-MaUO3kgNLL405Lx3IQTIJcbnc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "368752124022-9l6dilm5u7ssifmf2fm1mige7a36h48t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

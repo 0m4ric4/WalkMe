@@ -1,7 +1,9 @@
 package com.omarica.walkme;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -17,16 +19,19 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.speech.RecognizerIntent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -39,6 +44,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
@@ -58,6 +68,9 @@ import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -67,6 +80,7 @@ public class MainActivity extends FragmentActivity implements LocationListener,
 
     private static final String TAG = "WalkMe";
 
+    private static final int REQ_CODE_SPEECH_INPUT = 100;
     /* used to decide when bitmap should be downscaled */
     private static final int MAX_DIMENSION = 2048;
     private static final float HUE_IABLUE = 200.0f;
@@ -97,7 +111,8 @@ public class MainActivity extends FragmentActivity implements LocationListener,
     private Marker mMarker;
 
     private float currentDegree = 0f;
-
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
         // device sensor manager
 
     private SensorManager mSensorManager;
@@ -189,11 +204,48 @@ public class MainActivity extends FragmentActivity implements LocationListener,
 
     };
 
+
+    HashMap<String, LatLng> poiMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
+        poiMap = new HashMap<>();
+
+      database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("building").child("engineering").child("floor").child("2");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    for(DataSnapshot i : dataSnapshot.getChildren() ) {
+
+                        double lat = 0;
+                        double lng = 0;
+                            for(DataSnapshot j: i.getChildren()) {
+
+                                if (j.getKey().toString().equals("lat")) {
+                                    lat = (double) j.getValue();
+                                } else {
+                                    lng = (double) j.getValue();
+                                }
+                            }
+                            LatLng latLng = new LatLng(lat, lng);
+                            poiMap.put(i.getKey(), latLng);
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -234,6 +286,47 @@ public class MainActivity extends FragmentActivity implements LocationListener,
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)){
+
+            startVoiceInput();
+
+        }
+        return true;
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                boolean isCorrect;
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    //Toast.makeText(this, result.get(0), Toast.LENGTH_SHORT).show();
+
+                    isCorrect = poiMap.containsKey(result.get(0));
+                    Toast.makeText(this, isCorrect + " "+ result.get(0), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+
+        }
+    }
+
+    private void startVoiceInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         // remember to clean up after ourselves
@@ -253,8 +346,7 @@ public class MainActivity extends FragmentActivity implements LocationListener,
 
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
             mMap.setMyLocationEnabled(false);
         }
 
@@ -511,6 +603,8 @@ public class MainActivity extends FragmentActivity implements LocationListener,
     @Override
     public void onMapClick(LatLng point) {
         if (mMap != null) {
+
+
 
             mDestination = point;
             if (mDestinationMarker == null) {

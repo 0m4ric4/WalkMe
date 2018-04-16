@@ -18,6 +18,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.support.design.widget.Snackbar;
@@ -75,7 +76,7 @@ import java.util.Locale;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends FragmentActivity implements LocationListener,
-        GoogleMap.OnMapClickListener,SensorEventListener {
+        GoogleMap.OnMapClickListener, SensorEventListener {
     private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 42;
 
     private static final String TAG = "WalkMe";
@@ -110,10 +111,12 @@ public class MainActivity extends FragmentActivity implements LocationListener,
     private LatLng currentLocation;
     private Marker mMarker;
 
-    private float currentDegree = 0f;
+    private int currentDegree = 0;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
-        // device sensor manager
+    private DatabaseReference degreeRef;
+
+    // device sensor manager
 
     private SensorManager mSensorManager;
     /**
@@ -206,36 +209,36 @@ public class MainActivity extends FragmentActivity implements LocationListener,
 
 
     HashMap<String, LatLng> poiMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-
         poiMap = new HashMap<>();
 
-      database = FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
         myRef = database.getReference("building").child("engineering").child("floor").child("2");
-
+        degreeRef = database.getReference();
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    for(DataSnapshot i : dataSnapshot.getChildren() ) {
+                for (DataSnapshot i : dataSnapshot.getChildren()) {
 
-                        double lat = 0;
-                        double lng = 0;
-                            for(DataSnapshot j: i.getChildren()) {
+                    double lat = 0;
+                    double lng = 0;
+                    for (DataSnapshot j : i.getChildren()) {
 
-                                if (j.getKey().toString().equals("lat")) {
-                                    lat = (double) j.getValue();
-                                } else {
-                                    lng = (double) j.getValue();
-                                }
-                            }
-                            LatLng latLng = new LatLng(lat, lng);
-                            poiMap.put(i.getKey(), latLng);
+                        if (j.getKey().toString().equals("lat")) {
+                            lat = (double) j.getValue();
+                        } else {
+                            lng = (double) j.getValue();
+                        }
+                    }
+                    LatLng latLng = new LatLng(lat, lng);
+                    poiMap.put(i.getKey(), latLng);
                 }
 
 
@@ -287,13 +290,14 @@ public class MainActivity extends FragmentActivity implements LocationListener,
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)){
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
 
             startVoiceInput();
 
         }
         return true;
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -306,7 +310,38 @@ public class MainActivity extends FragmentActivity implements LocationListener,
                     //Toast.makeText(this, result.get(0), Toast.LENGTH_SHORT).show();
 
                     isCorrect = poiMap.containsKey(result.get(0));
-                    Toast.makeText(this, isCorrect + " "+ result.get(0), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, isCorrect + " " + result.get(0), Toast.LENGTH_SHORT).show();
+
+                    /*
+                    if (mWayfinder != null) {
+                        mWayfinder.setDestination(poiMap.get(result.get(0)).latitude, poiMap.get(result.get(0)).longitude, mFloor);
+                    }
+                    Log.d(TAG, "Set destination: (" + mDestination.latitude + ", " +
+                            mDestination.longitude + "), floor=" + mFloor);
+
+                    updateRoute(); */
+                    LatLng point = poiMap.get(result.get(0));
+
+                    if (mMap != null) {
+
+
+
+                        mDestination = point;
+                        if (mDestinationMarker == null) {
+                            mDestinationMarker = mMap.addMarker(new MarkerOptions()
+                                    .position(point)
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                        } else {
+                            mDestinationMarker.setPosition(point);
+                        }
+                        if (mWayfinder != null) {
+                            mWayfinder.setDestination(point.latitude, point.longitude, mFloor);
+                        }
+                        Log.d(TAG, "Set destination: (" + mDestination.latitude + ", " +
+                                mDestination.longitude + "), floor=" + mFloor);
+
+                        updateRoute();
+                    }
                 }
                 break;
             }
@@ -342,11 +377,21 @@ public class MainActivity extends FragmentActivity implements LocationListener,
 
         // for the system's orientation sensor registered listeners
 
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_GAME);
 
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             mMap.setMyLocationEnabled(false);
         }
 
@@ -692,9 +737,20 @@ public class MainActivity extends FragmentActivity implements LocationListener,
 
 
     @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
+    public void onSensorChanged(final SensorEvent sensorEvent) {
 
-        currentDegree = sensorEvent.values[0];
+        currentDegree = (int) sensorEvent.values[0];
+        degreeRef.child("currentDegree").setValue(currentDegree);
+
+     /*   final Handler handlerwayfinding-graph-4.jsonwayfinding-graph-5.json = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+                currentDegree = (int) sensorEvent.values[0];
+                degreeRef.child("currentDegree").setValue(currentDegree);
+            }
+        }, 5000); */
 
        /* if(mLocation!=null)
         drawMarker(); */

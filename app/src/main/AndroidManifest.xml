@@ -2,13 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.omarica.walkme">
 
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -23,11 +23,10 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"/>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyC2BkPbZFggIseIm9g4hq2pILXt-zGm6PI" />
-
+            android:value="AIzaSyC2BkPbZFggIseIm9g4hq2pILXt-zGm6PI"/>
         <meta-data
             android:name="com.indooratlas.android.sdk.API_KEY"
             android:value="ad903071-d681-497f-88b7-135fb951e255"/>
@@ -35,13 +34,26 @@
             android:name="com.indooratlas.android.sdk.API_SECRET"
             android:value="irE+0uaSDeL3E1CK/TMp2kqDM4J0cNa/ogcc/ezEpBIrqOTT/4sbnjnlhfNUefL3hMpy9Ik41/XtQdN0IDRJSkIf0P+wOfz2YIGDtEFhCusYdmQa1RD7Suf8JEgBhw=="/>
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".IndoorsActivity"
             android:screenOrientation="portrait">
+
+        </activity>
+        <activity android:name=".OutdoorsActivity"
+                  android:screenOrientation="portrait">
+
+
+
+
+        </activity>
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+
         </activity>
     </application>
 

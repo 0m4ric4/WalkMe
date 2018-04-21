@@ -35,8 +35,16 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.google.firebase:firebase-core:9.0.0'
     compile 'com.google.firebase:firebase-database:9.0.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:5.5.1'
+    implementation ('com.mapbox.mapboxsdk:mapbox-android-sdk:5.5.1@aar') {
+        transitive=true
+    }
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation:0.12.0'
+    implementation ('com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.12.0') {
+        transitive = true
+    }
 }
-repositories{
+repositories {
     maven {
         url "http://indooratlas-ltd.bintray.com/mvn-public"
 

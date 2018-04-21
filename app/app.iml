@@ -71,13 +71,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/assets" type="java-test-resource" />
@@ -85,6 +78,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/build-info" />
@@ -115,52 +115,78 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 26 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="com.pubnub:pubnub-android:3.7.5@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-media-compat-26.1.0" level="project" />
-    <orderEntry type="library" name="com.android.support:recyclerview-v7-26.1.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="junit:junit:4.12@jar" level="project" />
+    <orderEntry type="library" name="com.squareup.retrofit2:converter-gson:2.3.0@jar" level="project" />
+    <orderEntry type="library" name="com.amazonaws:aws-android-sdk-polly:2.3.8@jar" level="project" />
+    <orderEntry type="library" name="com.android.support:animated-vector-drawable-27.0.2" level="project" />
+    <orderEntry type="library" name="com.squareup.okhttp3:okhttp:3.10.0@jar" level="project" />
+    <orderEntry type="library" name="com.squareup.okio:okio:1.14.0@jar" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-sdk-turf:3.0.1@jar" level="project" />
+    <orderEntry type="library" name="com.mapzen.android:lost-3.0.4" level="project" />
     <orderEntry type="library" name="com.google.firebase:firebase-core-9.0.0" level="project" />
-    <orderEntry type="library" name="android.arch.lifecycle:common:1.0.0@jar" level="project" />
     <orderEntry type="library" name="com.google.android.gms:play-services-basement-9.0.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="com.android.support.test.espresso:espresso-core-3.0.1" level="project" />
+    <orderEntry type="library" name="com.jakewharton.timber:timber-4.6.0" level="project" />
     <orderEntry type="library" name="com.google.firebase:firebase-analytics-9.0.0" level="project" />
-    <orderEntry type="library" name="com.android.support:support-fragment-26.1.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="javax.inject:javax.inject:1@jar" level="project" />
+    <orderEntry type="library" name="android.arch.lifecycle:extensions-1.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="com.squareup:javawriter:2.1.1@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-vector-drawable-26.1.0" level="project" />
-    <orderEntry type="library" name="android.arch.lifecycle:runtime-1.0.0" level="project" />
     <orderEntry type="library" name="com.indooratlas.android:indooratlas-android-wayfinding-2.7.0-beta-9" level="project" />
-    <orderEntry type="library" name="com.android.support:appcompat-v7-26.1.0" level="project" />
-    <orderEntry type="library" name="com.android.support:support-annotations:26.1.0@jar" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-analytics-impl-9.0.0" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-java-geojson:2.2.10@jar" level="project" />
     <orderEntry type="library" name="com.android.support.constraint:constraint-layout-solver:1.0.2@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-core-utils-26.1.0" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-android-services-2.2.10" level="project" />
     <orderEntry type="library" name="com.android.support.constraint:constraint-layout-1.0.2" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-java-services:2.2.10@jar" level="project" />
     <orderEntry type="library" name="com.google.android.gms:play-services-base-9.0.0" level="project" />
-    <orderEntry type="library" name="com.android.support:support-core-ui-26.1.0" level="project" />
+    <orderEntry type="library" name="com.google.code.gson:gson:2.8.2@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="com.android.support.test:runner-1.0.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="com.android.support.test:rules-1.0.1" level="project" />
+    <orderEntry type="library" name="android.arch.lifecycle:runtime-1.0.3" level="project" />
+    <orderEntry type="library" name="com.android.support:support-vector-drawable-27.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="com.google.code.findbugs:jsr305:2.0.1@jar" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-database-connection-9.0.0" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-database-9.0.0" level="project" />
+    <orderEntry type="library" name="com.android.support:cardview-v7-27.0.2" level="project" />
     <orderEntry type="library" name="com.google.firebase:firebase-iid-9.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="com.android.support.test.espresso:espresso-idling-resource-3.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="org.hamcrest:hamcrest-core:1.3@jar" level="project" />
-    <orderEntry type="library" name="com.indooratlas.android:indooratlas-android-sdk-2.7.0-beta-848" level="project" />
-    <orderEntry type="library" name="com.android.support:support-compat-26.1.0" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-tasks-9.0.0" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-android-navigation-0.12.0" level="project" />
     <orderEntry type="library" name="com.google.firebase:firebase-common-9.0.0" level="project" />
+    <orderEntry type="library" name="com.google.android.gms:play-services-tasks-9.0.0" level="project" />
     <orderEntry type="library" name="android.arch.core:common:1.0.0@jar" level="project" />
-    <orderEntry type="library" scope="TEST" name="org.hamcrest:hamcrest-library:1.3@jar" level="project" />
+    <orderEntry type="library" name="com.android.support:support-core-ui-27.0.2" level="project" />
+    <orderEntry type="library" name="com.android.support:support-compat-27.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="org.hamcrest:hamcrest-integration:1.3@jar" level="project" />
     <orderEntry type="library" name="com.google.maps.android:android-maps-utils-0.3.4" level="project" />
-    <orderEntry type="library" name="com.android.support:support-v4-26.1.0" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-sdk-core:3.0.1@jar" level="project" />
     <orderEntry type="library" name="com.davemorrissey.labs:subsampling-scale-image-view-3.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="net.sf.kxml:kxml2:2.3.0@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:animated-vector-drawable-26.1.0" level="project" />
     <orderEntry type="library" name="com.squareup.picasso:picasso:2.5.2@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:design-26.1.0" level="project" />
-    <orderEntry type="library" name="com.android.support:transition-26.1.0" level="project" />
+    <orderEntry type="library" name="com.android.support:support-fragment-27.0.2" level="project" />
+    <orderEntry type="library" name="com.android.support:support-media-compat-27.0.2" level="project" />
+    <orderEntry type="library" name="android.arch.core:runtime-1.0.0" level="project" />
+    <orderEntry type="library" name="com.android.support:support-v4-27.0.2" level="project" />
+    <orderEntry type="library" name="com.pubnub:pubnub-android:3.7.5@jar" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-sdk-services:3.0.1@jar" level="project" />
+    <orderEntry type="library" name="com.android.support:appcompat-v7-27.0.2" level="project" />
+    <orderEntry type="library" name="com.android.support:support-annotations:27.0.2@jar" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-sdk-geojson:3.0.1@jar" level="project" />
+    <orderEntry type="library" name="com.android.support:design-27.0.2" level="project" />
+    <orderEntry type="library" name="com.squareup.okhttp3:logging-interceptor:3.10.0@jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="junit:junit:4.12@jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="com.android.support.test.espresso:espresso-core-3.0.1" level="project" />
+    <orderEntry type="library" name="com.android.support:transition-27.0.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="javax.inject:javax.inject:1@jar" level="project" />
+    <orderEntry type="library" name="com.amazonaws:aws-android-sdk-core:2.3.8@jar" level="project" />
+    <orderEntry type="library" name="com.android.support:recyclerview-v7-27.0.2" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-android-navigation-ui-0.12.0" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-analytics-impl-9.0.0" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-android-telemetry-2.2.10" level="project" />
+    <orderEntry type="library" scope="TEST" name="com.android.support.test:rules-1.0.1" level="project" />
+    <orderEntry type="library" name="com.squareup.retrofit2:retrofit:2.3.0@jar" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-database-connection-9.0.0" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-database-9.0.0" level="project" />
+    <orderEntry type="library" name="android.arch.lifecycle:common:1.0.3@jar" level="project" />
+    <orderEntry type="library" name="com.indooratlas.android:indooratlas-android-sdk-2.7.0-beta-848" level="project" />
+    <orderEntry type="library" scope="TEST" name="org.hamcrest:hamcrest-library:1.3@jar" level="project" />
+    <orderEntry type="library" name="com.android.support:support-core-utils-27.0.2" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer-0.4.0" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-android-sdk-5.5.1" level="project" />
     <orderEntry type="library" name="com.google.android.gms:play-services-maps-9.0.0" level="project" />
+    <orderEntry type="library" name="com.mapbox.mapboxsdk:mapbox-java-core:2.2.10@jar" level="project" />
   </component>
 </module>
